@@ -378,7 +378,18 @@ a {
   font-weight: 700;
 }
 .calculating__result span {
+  position: relative;
   font-size: 42px;
+  margin-right: 20px;
+}
+.calculating__result span::after {
+  position: absolute;
+  bottom: 0;
+  content: "";
+  display: block;
+  border-bottom: solid 1px #000;
+  width: 100px;
+  right: 0;
 }
 .menu {
   padding: 40px 0 50px 0;

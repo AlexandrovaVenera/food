@@ -295,3 +295,126 @@ function showSlide(n) {
     ? (current.textContent = `0${slideIndex}`)
     : (current.textContent = slideIndex);
 }
+
+//Calculate
+const calculatingChoose = document.querySelectorAll(".calculating__choose div");
+const result = document.querySelector(".calculating__result span");
+let gender = localStorage.getItem("gender") || "female",
+  activity = localStorage.getItem("activity") || 1.375,
+  height = localStorage.getItem("height") || "",
+  weight = localStorage.getItem("weight") || "",
+  age = localStorage.getItem("age") || "";
+
+function updateInfo(selector, activeClass, variable) {
+  const elements = document.querySelectorAll(selector);
+  elements.forEach((el) => el.classList.remove(activeClass));
+  const result = elements.forEach((el) => {
+    if (el.getAttribute(selector.slice(1, -1)) == variable) {
+      el.classList.add(activeClass);
+    }
+  });
+}
+
+function setDinamicInfo(height, weight, age) {
+  console.log(height, weight, age);
+  const inputs = document.querySelectorAll("input");
+  inputs.forEach((input) => {
+    switch (input.getAttribute("id")) {
+      case "height":
+        input.value = height;
+        console.log(input.value);
+        break;
+      case "weight":
+        input.value = weight;
+        break;
+
+      case "age":
+        input.value = age;
+        break;
+    }
+  });
+}
+
+setDinamicInfo(height, weight, age);
+updateInfo("[data-gender]", "calculating__choose-item_active", gender);
+
+updateInfo("[data-activity]", "calculating__choose-item_active", activity);
+
+function calculateCalories() {
+  let calories;
+  if (!activity || !gender || !weight || !age || !height) {
+    calories = "";
+  } else {
+    if (gender == "female") {
+      calories = Math.floor(
+        (447.6 + 9.2 * weight + 3.1 * height - 4.3 * age) * activity
+      );
+    } else {
+      calories = Math.floor(
+        (88.36 + 13.4 * weight + 4.8 * height - 5.7 * age) * activity
+      );
+    }
+  }
+  result.textContent = calories;
+}
+
+calculateCalories();
+
+function selectOptions(classes, activeClasses) {
+  const elements = document.querySelectorAll(classes);
+  elements.forEach((element) => {
+    element.addEventListener("click", function (e) {
+      elements.forEach((el) => el.classList.remove(activeClasses));
+      e.target.classList.add(activeClasses);
+      if (e.target.getAttribute("data-activity")) {
+        activity = +e.target.getAttribute("data-activity");
+        localStorage.setItem("activity", activity);
+      } else {
+        gender = e.target.getAttribute("data-gender");
+        localStorage.setItem("gender", gender);
+      }
+      console.log(activity);
+      calculateCalories();
+    });
+  });
+}
+
+selectOptions(
+  ".calculating__choose_big div",
+  "calculating__choose-item_active"
+);
+
+selectOptions("#gender div", "calculating__choose-item_active");
+
+function getDinamicInfo() {
+  const inputs = document.querySelectorAll("input");
+
+  inputs.forEach((input) =>
+    input.addEventListener("input", function (e) {
+      if (input.value.match(/\D/g)) {
+        input.style.border = "1px solid red";
+      } else {
+        input.style.border = "none";
+        switch (input.getAttribute("id")) {
+          case "height":
+            height = +input.value;
+            localStorage.setItem("height", height);
+            break;
+          case "weight":
+            weight = +input.value;
+            localStorage.setItem("weight", weight);
+
+            break;
+          case "age":
+            age = +input.value;
+            localStorage.setItem("age", age);
+
+            break;
+        }
+      }
+      calculateCalories();
+    })
+  );
+}
+
+getDinamicInfo();
